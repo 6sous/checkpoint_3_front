@@ -1,0 +1,14 @@
+.countries {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.country {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid #00000011;
+  border-radius: 8px;
+}
+
