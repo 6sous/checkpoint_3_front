@@ -1,5 +1,5 @@
 import Header from "@/components/Header";
-import { CountryType, NewCountryInputType } from "@/types";
+import { Continent, CountryType, NewCountryInputType } from "@/types";
 import { gql, useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -41,21 +41,17 @@ const GET_CONTINENT = gql`
 
 export default function Home() {
   const [countries, setCountries] = useState([]);
-  const [newCountry, setNewCountry] = useState<NewCountryInputType>({
-    code: "",
-    name: "",
-    emoji: "",
-  });
+  const [continents, setContinents] = useState<Continent[]>();
 
   const [addCountry] = useMutation(NEW_COUNTRY);
 
-  const fillForm = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewCountry({ ...newCountry, [event.target.name]: event.target.value });
-  };
-
   const [getCountries, { loading, error }] = useLazyQuery(GET_COUNTRIES);
 
-  const { getContinents } = useQuery(GET_CONTINENT);
+  const {} = useQuery(GET_CONTINENT, {
+    onCompleted: (data) => {
+      setContinents(data.continents);
+    },
+  });
 
   const fetchCountries = () => {
     getCountries({
@@ -81,6 +77,22 @@ export default function Home() {
       <form
         onSubmit={(event) => {
           event.preventDefault();
+
+          const formData = new FormData(event.target as HTMLFormElement);
+
+          const entries = Object.fromEntries(formData.entries());
+
+          const newCountry = {
+            code: entries.code,
+            name: entries.name,
+            emoji: entries.emoji,
+            continent: {
+              id: Number(entries.continent),
+            },
+          };
+
+          console.log(newCountry);
+
           addCountry({
             variables: { data: newCountry },
             onCompleted: () => {
@@ -90,15 +102,26 @@ export default function Home() {
         }}>
         <label htmlFor="name">
           Name
-          <input type="text" name="name" id="name" onChange={fillForm} />
+          <input type="text" name="name" id="name" />
         </label>
         <label htmlFor="code">
           Code
-          <input type="text" name="code" id="code" onChange={fillForm} />
+          <input type="text" name="code" id="code" />
         </label>
         <label htmlFor="emoji">
           Emoji
-          <input type="text" name="emoji" id="emoji" onChange={fillForm} />
+          <input type="text" name="emoji" id="emoji" />
+        </label>
+        <label htmlFor="continent">
+          Continent
+          <select name="continent" id="continent">
+            {continents &&
+              continents.map((continent: Continent) => (
+                <option key={continent.id} value={continent.id}>
+                  {continent.name}
+                </option>
+              ))}
+          </select>
         </label>
         <button type="submit">Add new country</button>
       </form>

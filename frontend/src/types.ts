@@ -10,12 +10,12 @@ export type NewCountryInputType = {
   code: string;
   name: string;
   emoji: string;
-  continent?: number;
+  continent?: Continent;
 };
 
 export type Continent = {
   id: number;
   name: string;
-  countries: CountryType[];
+  countries?: CountryType[];
 };
 
