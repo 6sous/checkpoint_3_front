@@ -1,5 +1,4 @@
-import Header from "@/components/Header";
-import { Continent, CountryType, NewCountryInputType } from "@/types";
+import { Continent, CountryType } from "@/types";
 import { gql, useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
